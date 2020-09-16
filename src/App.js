@@ -1,29 +1,22 @@
 import React,{useState,useEffect} from 'react'
-import axios from './api/youtube'
 import SearchBar from './components/SearchBar'
 import VideoDetail from './components/VideoDetail'
 import VideoList from './components/VideoList'
+import useVideos from './hooks/useVideos'
 function App() {
-    const [videos,setVideos]=useState([])
     const [selectedVideo,setSelectedVideo]=useState(null)
-    useEffect(()=>{
-       onSearchSubmit('avengers endgame') 
-    },[])
-        const onSearchSubmit=async (searchText) => {
-       const response =await axios.get('/search',{
-        params:{
-            q:searchText
-          }
-        
-       })
-       setVideos(response.data.items)
-       setSelectedVideo(response.data.items[0])
-        }
+    
+     const [videos,search]=useVideos('avengers endgame')
+       
+     useEffect(()=>{
+        setSelectedVideo(videos[0])
+
+     },[videos])//whenever i get new videos
 
     return (
         <div>
               <div className='ui container'>
-        <SearchBar onFormSubmit={onSearchSubmit}/>
+        <SearchBar onFormSubmit={search}/>
         <div className='ui grid'>
           <div className='ui row'>
             <div className='eleven wide column'>
@@ -31,7 +24,7 @@ function App() {
         </div>
         <div className='five wide column'>
         <VideoList
-        videos={videos} onVideoSelect={selectedVideo}/>
+        videos={videos} onVideoSelect={setSelectedVideo}/>
         </div>
         </div>
         </div>
